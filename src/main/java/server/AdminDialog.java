@@ -52,6 +52,11 @@ public class AdminDialog implements Runnable {
                     courses();
                     break;
                 }
+
+                case "course": {
+                    course(parts[1]);
+                    break;
+                }
             }
 
             socket.close();
@@ -59,6 +64,13 @@ public class AdminDialog implements Runnable {
             System.out.println(1);
         }
 
+    }
+
+    private void course(String title) throws IOException{
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectOutputStream.writeObject(connector.getCourse(title));
+        objectOutputStream.flush();
+        objectOutputStream.close();
     }
 
     private void courses() throws IOException{
