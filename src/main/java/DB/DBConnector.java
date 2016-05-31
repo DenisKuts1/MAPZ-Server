@@ -78,10 +78,10 @@ public class DBConnector {
     }
 
 
-    public Course getCourse(int id){
+    public Course getCourse(String name){
         try {
             Statement statement = dbConnection.createStatement();
-            ResultSet rs = statement.executeQuery("Select * FROM Courses WHERE id = " + id + "");
+            ResultSet rs = statement.executeQuery("Select * FROM Courses WHERE title = '" + name + "'");
             Course course = new Course();
             course.setDescription("description");
             course.setTitle(rs.getString("title"));
