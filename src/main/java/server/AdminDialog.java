@@ -1,6 +1,7 @@
 package server;
 
 import DB.DBConnector;
+import model.Comment;
 import model.Mark;
 import model.User;
 
@@ -67,6 +68,10 @@ public class AdminDialog implements Runnable {
                 case "marks":{
                     marks(parts[1]);
                 }
+
+                case "comments":{
+                    comments(parts[1]);
+                }
             }
 
             socket.close();
@@ -76,10 +81,17 @@ public class AdminDialog implements Runnable {
 
     }
 
+    private void comments(String title) throws IOException{
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        ArrayList<Comment> list = connector.getAllComments(title);
+        objectOutputStream.writeObject(list);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+    }
+
     private void marks(String title) throws IOException{
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         ArrayList<Mark> list = connector.getAllMarks(title);
-        System.out.println(list.size());
         objectOutputStream.writeObject(list);
         objectOutputStream.flush();
         objectOutputStream.close();

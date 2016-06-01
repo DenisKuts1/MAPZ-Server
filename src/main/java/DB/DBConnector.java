@@ -154,23 +154,36 @@ public class DBConnector {
             Statement statement = dbConnection.createStatement();
             Course course = getCourse(title);
             ResultSet rs = statement.executeQuery("Select * FROM Marks WHERE courseID = " + course.getId());
-            System.out.println("Select * FROM Marks WHERE courseID = " + course.getId());
-
-
             ArrayList<Mark> list = new ArrayList<Mark>();
             while (rs.next()) {
                 Mark mark = new Mark();
                 mark.setCourse(course);
                 mark.setUser(getUserById(rs.getInt("userID")));
-                System.out.println("find user by id");
                 mark.setMark(rs.getInt("mark"));
                 mark.setId(rs.getInt("id"));
                 list.add(mark);
-                System.out.println("add Mark");
             }
             return list;
+        }catch (SQLException e){
+            return null;
+        }
+    }
 
-
+    public ArrayList<Comment> getAllComments(String title){
+        try {
+            Course course = getCourse(title);
+            Statement statement = dbConnection.createStatement();
+            ResultSet rs = statement.executeQuery("Select * FROM Comments WHERE courseID = " + course.getId());
+            ArrayList<Comment> list = new ArrayList<Comment>();
+            while (rs.next()) {
+                Comment comment = new Comment();
+                comment.setCourse(course);
+                comment.setUser(getUserById(rs.getInt("userID")));
+                comment.setComment(rs.getString("comment"));
+                comment.setId(rs.getInt("id"));
+                list.add(comment);
+            }
+            return list;
         }catch (SQLException e){
             return null;
         }
