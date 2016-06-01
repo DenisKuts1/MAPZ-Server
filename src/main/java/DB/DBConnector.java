@@ -68,6 +68,21 @@ public class DBConnector {
         }
     }
 
+    public User getUserById(int id){
+        try {
+            Statement statement = dbConnection.createStatement();
+            ResultSet rs = statement.executeQuery("Select * FROM Users WHERE id = '" + id + "'");
+            User user = new User();
+            user.setUserName(rs.getString("userName"));
+            user.setPassword(rs.getString("password"));
+            user.setId(rs.getInt("id"));
+            user.setModerator(rs.getBoolean("isModerator"));
+            return user;
+        }catch (SQLException e){
+            return null;
+        }
+    }
+
     public boolean insertCourse(Course course){
         String insertTableSQL = "INSERT INTO Courses"
                 + "(title, description, link) " + "VALUES"
@@ -92,6 +107,8 @@ public class DBConnector {
             return null;
         }
     }
+
+
 
     public ArrayList<String> getCourses(){
         try {
@@ -127,6 +144,46 @@ public class DBConnector {
             mark.setMark(rs.getInt("mark"));
             mark.setId(rs.getInt("id"));
             return mark;
+        }catch (SQLException e){
+            return null;
+        }
+    }
+
+    public ArrayList<Mark> getAllMarks(String title){
+        try {
+            Statement statement = dbConnection.createStatement();
+            Course course = getCourse(title);
+            ResultSet rs = statement.executeQuery("Select * FROM Marks WHERE courseID = " + course.getId());
+            ArrayList<Mark> list = new ArrayList<Mark>();
+            while (rs.next()) {
+                Mark mark = new Mark();
+                mark.setCourse(course);
+                mark.setUser(getUserById(rs.getInt("userID")));
+                mark.setMark(rs.getInt("mark"));
+                mark.setId(rs.getInt("id"));
+                list.add(mark);
+            }
+            return list;
+        }catch (SQLException e){
+            return null;
+        }
+    }
+
+    public ArrayList<Comment> getAllComments(String title){
+        try {
+            Course course = getCourse(title);
+            Statement statement = dbConnection.createStatement();
+            ResultSet rs = statement.executeQuery("Select * FROM Comments WHERE courseID = " + course.getId());
+            ArrayList<Comment> list = new ArrayList<Comment>();
+            while (rs.next()) {
+                Comment comment = new Comment();
+                comment.setCourse(course);
+                comment.setUser(getUserById(rs.getInt("userID")));
+                comment.setComment(rs.getString("comment"));
+                comment.setId(rs.getInt("id"));
+                list.add(comment);
+            }
+            return list;
         }catch (SQLException e){
             return null;
         }

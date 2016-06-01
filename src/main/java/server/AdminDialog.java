@@ -1,6 +1,9 @@
 package server;
 
 import DB.DBConnector;
+import model.Comment;
+import model.Course;
+import model.Mark;
 import model.User;
 
 import java.io.*;
@@ -62,6 +65,20 @@ public class AdminDialog implements Runnable {
                     download(parts[1]);
                     break;
                 }
+
+                case "marks":{
+                    marks(parts[1]);
+                    break;
+                }
+
+                case "comments":{
+                    comments(parts[1]);
+                    break;
+                }
+                case "comment":{
+                    comment(Integer.parseInt(parts[1]),parts[2],parts[3],parts[4]);
+                    break;
+                }
             }
 
             socket.close();
@@ -69,6 +86,37 @@ public class AdminDialog implements Runnable {
             System.out.println(1);
         }
 
+    }
+
+    private void comment(int mark, String comment, String username, String title){
+        Course course = connector.getCourse(title);
+        User user = connector.getUser(username);
+        Mark newMark = new Mark();
+        newMark.setCourse(course);
+        newMark.setUser(user);
+        newMark.setMark(mark);
+        Comment newComment = new Comment();
+        newComment.setCourse(course);
+        newComment.setUser(user);
+        newComment.setComment(comment);
+        connector.insertMark(newMark);
+        connector.insertComment(newComment);
+    }
+
+    private void comments(String title) throws IOException{
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        ArrayList<Comment> list = connector.getAllComments(title);
+        objectOutputStream.writeObject(list);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+    }
+
+    private void marks(String title) throws IOException{
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        ArrayList<Mark> list = connector.getAllMarks(title);
+        objectOutputStream.writeObject(list);
+        objectOutputStream.flush();
+        objectOutputStream.close();
     }
 
     private void download(String link) throws IOException{
