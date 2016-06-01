@@ -57,6 +57,11 @@ public class AdminDialog implements Runnable {
                     course(parts[1]);
                     break;
                 }
+
+                case "download": {
+                    download(parts[1]);
+                    break;
+                }
             }
 
             socket.close();
@@ -64,6 +69,23 @@ public class AdminDialog implements Runnable {
             System.out.println(1);
         }
 
+    }
+
+    private void download(String link) throws IOException{
+        File file = new File(link);
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectOutputStream.writeObject(file.length());
+        objectOutputStream.flush();
+        byte[] byteArray = new byte[8192];
+        int in;
+        while ((in = bis.read(byteArray)) != -1){
+            bos.write(byteArray,0,in);
+        }
+        bis.close();
+        bos.close();
+        objectOutputStream.close();
     }
 
     private void course(String title) throws IOException{
