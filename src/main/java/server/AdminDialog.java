@@ -2,6 +2,7 @@ package server;
 
 import DB.DBConnector;
 import model.Comment;
+import model.Course;
 import model.Mark;
 import model.User;
 
@@ -67,10 +68,16 @@ public class AdminDialog implements Runnable {
 
                 case "marks":{
                     marks(parts[1]);
+                    break;
                 }
 
                 case "comments":{
                     comments(parts[1]);
+                    break;
+                }
+                case "comment":{
+                    comment(Integer.parseInt(parts[1]),parts[2],parts[3],parts[4]);
+                    break;
                 }
             }
 
@@ -79,6 +86,21 @@ public class AdminDialog implements Runnable {
             System.out.println(1);
         }
 
+    }
+
+    private void comment(int mark, String comment, String username, String title){
+        Course course = connector.getCourse(title);
+        User user = connector.getUser(username);
+        Mark newMark = new Mark();
+        newMark.setCourse(course);
+        newMark.setUser(user);
+        newMark.setMark(mark);
+        Comment newComment = new Comment();
+        newComment.setCourse(course);
+        newComment.setUser(user);
+        newComment.setComment(comment);
+        connector.insertMark(newMark);
+        connector.insertComment(newComment);
     }
 
     private void comments(String title) throws IOException{
