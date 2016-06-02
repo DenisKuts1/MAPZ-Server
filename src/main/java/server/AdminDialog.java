@@ -66,22 +66,41 @@ public class AdminDialog implements Runnable {
                     break;
                 }
 
-                case "marks":{
+                case "marks": {
                     marks(parts[1]);
                     break;
                 }
 
-                case "comments":{
+                case "comments": {
                     comments(parts[1]);
                     break;
                 }
-                case "comment":{
-                    comment(Integer.parseInt(parts[1]),parts[2],parts[3],parts[4]);
+                case "comment": {
+                    comment(Integer.parseInt(parts[1]), parts[2], parts[3], parts[4]);
                     break;
                 }
                 case "delComment": {
                     deleteComment(parts[1], parts[2]);
+                    break;
                 }
+                case "updateVideo": {
+                    File file = new File(connector.getCourse(parts[1]).getLink());
+                    file.delete();
+                    file.createNewFile();
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                    int in;
+                    byte[] byteArray = new byte[8192];
+                    while ((in = dataInputStream.read(byteArray)) != -1) {
+                        bos.write(byteArray, 0, in);
+                    }
+                    bos.close();
+
+                    break;
+                }
+                case "updateCourse":{
+                    updateCourse(parts[1],parts[2], parts[3]);
+                }
+
             }
 
             socket.close();
@@ -91,11 +110,15 @@ public class AdminDialog implements Runnable {
 
     }
 
-    private void deleteComment(String username, String title){
-        connector.deleteComment(username,title);
+    private void updateCourse(String oldTitle, String title,String description){
+        connector.updateCourse(oldTitle, title, description);
     }
 
-    private void comment(int mark, String comment, String username, String title){
+    private void deleteComment(String username, String title) {
+        connector.deleteComment(username, title);
+    }
+
+    private void comment(int mark, String comment, String username, String title) {
         Course course = connector.getCourse(title);
         User user = connector.getUser(username);
         Mark newMark = new Mark();
@@ -110,7 +133,7 @@ public class AdminDialog implements Runnable {
         connector.insertComment(newComment);
     }
 
-    private void comments(String title) throws IOException{
+    private void comments(String title) throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         ArrayList<Comment> list = connector.getAllComments(title);
         objectOutputStream.writeObject(list);
@@ -118,7 +141,7 @@ public class AdminDialog implements Runnable {
         objectOutputStream.close();
     }
 
-    private void marks(String title) throws IOException{
+    private void marks(String title) throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         ArrayList<Mark> list = connector.getAllMarks(title);
         objectOutputStream.writeObject(list);
@@ -126,7 +149,7 @@ public class AdminDialog implements Runnable {
         objectOutputStream.close();
     }
 
-    private void download(String link) throws IOException{
+    private void download(String link) throws IOException {
         File file = new File(link);
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
         BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
@@ -135,22 +158,23 @@ public class AdminDialog implements Runnable {
         objectOutputStream.flush();
         byte[] byteArray = new byte[8192];
         int in;
-        while ((in = bis.read(byteArray)) != -1){
-            bos.write(byteArray,0,in);
+        while ((in = bis.read(byteArray)) != -1) {
+            bos.write(byteArray, 0, in);
         }
         bis.close();
         bos.close();
         objectOutputStream.close();
+        System.gc();
     }
 
-    private void course(String title) throws IOException{
+    private void course(String title) throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(connector.getCourse(title));
         objectOutputStream.flush();
         objectOutputStream.close();
     }
 
-    private void courses() throws IOException{
+    private void courses() throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(connector.getCourses());
         objectOutputStream.flush();
@@ -160,20 +184,19 @@ public class AdminDialog implements Runnable {
     private void register(String username, String password) throws IOException {
         User user;
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        if((user = connector.getUser(username)) == null){
+        if ((user = connector.getUser(username)) == null) {
             user = new User();
             user.setPassword(password);
             user.setUserName(username);
             user.setModerator(false);
             connector.insertUser(user);
             objectOutputStream.writeObject(true);
-        } else
-        {
+        } else {
             objectOutputStream.writeObject(false);
         }
         objectOutputStream.flush();
         objectOutputStream.close();
-}
+    }
 
     private void authorize(String username, String password) throws IOException {
         User user;
