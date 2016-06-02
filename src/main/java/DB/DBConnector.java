@@ -50,9 +50,12 @@ public class DBConnector {
             Statement statement = dbConnection.createStatement();
             Course course = getCourse(oldTitle);
             if(!course.getLink().equals("video/" + title + ".mp4")) {
-                File file = new File(course.getLink());
-                File newFile = new File("video/" + title + ".mp4");
-                try {
+                //File newFile = new File("video/" + title + ".mp4");
+                if(!oldTitle.equals(title)){
+                    File file = new File(course.getLink());
+                    file.delete();
+                }
+                /*try {
                     FileInputStream inputStream = new FileInputStream(file);
                     BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(newFile));
                     byte[] byteArray = new byte[8196];
@@ -64,9 +67,8 @@ public class DBConnector {
                     inputStream.close();
                     outputStream.close();
                     System.gc();
-                    file.delete();
                 } catch (IOException e) {
-                }
+                }*/
             }
 
 

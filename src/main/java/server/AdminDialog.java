@@ -84,22 +84,48 @@ public class AdminDialog implements Runnable {
                     break;
                 }
                 case "updateVideo": {
-                    File file = new File(connector.getCourse(parts[1]).getLink());
-                    file.delete();
-                    file.createNewFile();
+                    File file = new File("video/" + parts[1] + ".mp4");
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
                     int in;
                     byte[] byteArray = new byte[8192];
                     while ((in = dataInputStream.read(byteArray)) != -1) {
                         bos.write(byteArray, 0, in);
+                        bos.flush();
                     }
+                    bos.flush();
                     bos.close();
+                    System.gc();
 
                     break;
                 }
                 case "updateCourse":{
                     updateCourse(parts[1],parts[2], parts[3]);
+                    break;
                 }
+
+                case "createCourse":{
+
+
+
+                    Course course = new Course();
+                    course.setTitle(parts[1]);
+                    course.setDescription(parts[2]);
+                    course.setLink("video/" + parts[1] + ".mp4");
+                    File file = new File("video/" + parts[1] + ".mp4");
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                    int in;
+                    byte[] byteArray = new byte[8192];
+                    while ((in = dataInputStream.read(byteArray)) != -1) {
+                        bos.write(byteArray, 0, in);
+                        bos.flush();
+                    }
+                    bos.flush();
+                    bos.close();
+                    connector.insertCourse(course);
+                    break;
+                }
+
+
 
             }
 
