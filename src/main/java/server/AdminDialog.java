@@ -124,6 +124,9 @@ public class AdminDialog implements Runnable {
                     connector.insertCourse(course);
                     break;
                 }
+                case "deleteCourse": {
+                    connector.deleteCourse(parts[1]);
+                }
 
 
 

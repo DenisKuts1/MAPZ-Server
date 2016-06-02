@@ -261,4 +261,13 @@ public class DBConnector {
         } catch (SQLException e) {
         }
     }
+
+    public void deleteCourse(String title){
+        try {
+            Statement statement = dbConnection.createStatement();
+            new File("video/" + title + ".mp4").delete();
+            ResultSet rs = statement.executeQuery("DELETE FROM Courses WHERE title = '" + title + "'");
+        } catch (SQLException e) {
+        }
+    }
 }
