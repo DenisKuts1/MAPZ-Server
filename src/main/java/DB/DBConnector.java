@@ -102,7 +102,6 @@ public class DBConnector {
             } else {
                 user.setModerator(true);
             }
-            System.out.println(user.isModerator());
             return user;
         } catch (SQLException e) {
             return null;

@@ -154,12 +154,15 @@ public class AdminDialog implements Runnable {
         newMark.setCourse(course);
         newMark.setUser(user);
         newMark.setMark(mark);
-        Comment newComment = new Comment();
-        newComment.setCourse(course);
-        newComment.setUser(user);
-        newComment.setComment(comment);
+        if(!comment.equals("")) {
+            Comment newComment = new Comment();
+            newComment.setCourse(course);
+            newComment.setUser(user);
+            newComment.setComment(comment);
+            connector.insertComment(newComment);
+        }
         connector.insertMark(newMark);
-        connector.insertComment(newComment);
+
     }
 
     private void comments(String title) throws IOException {
