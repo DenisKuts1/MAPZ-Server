@@ -79,6 +79,9 @@ public class AdminDialog implements Runnable {
                     comment(Integer.parseInt(parts[1]),parts[2],parts[3],parts[4]);
                     break;
                 }
+                case "delComment": {
+                    deleteComment(parts[1], parts[2]);
+                }
             }
 
             socket.close();
@@ -86,6 +89,10 @@ public class AdminDialog implements Runnable {
             System.out.println(1);
         }
 
+    }
+
+    private void deleteComment(String username, String title){
+        connector.deleteComment(username,title);
     }
 
     private void comment(int mark, String comment, String username, String title){

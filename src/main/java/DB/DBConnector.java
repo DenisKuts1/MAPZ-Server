@@ -46,8 +46,8 @@ public class DBConnector {
     public boolean insertUser(User user){
         String insertTableSQL = "INSERT INTO Users"
                 + "( userName, password, isModerator) " + "VALUES"
-                + "('" + user.getUserName() + "','" + user.getPassword() + "','"
-                + user.isModerator() + "');";
+                + "('" + user.getUserName() + "','" + user.getPassword() + "',"
+                + (user.isModerator() ? 0 : -1) + ");";
         System.out.println(insertTableSQL);
         return insert(insertTableSQL);
     }
@@ -61,7 +61,13 @@ public class DBConnector {
             user.setUserName(userName);
             user.setPassword(rs.getString("password"));
             user.setId(rs.getInt("id"));
-            user.setModerator(rs.getBoolean("isModerator"));
+            if(rs.getInt("isModerator") == -1) {
+                user.setModerator(false);
+            }
+            else {
+                user.setModerator(true);
+            }
+            System.out.println(user.isModerator());
             return user;
         }catch (SQLException e){
             return null;
@@ -210,6 +216,15 @@ public class DBConnector {
             return comment;
         }catch (SQLException e){
             return null;
+        }
+    }
+    public void deleteComment(String username, String title){
+        try {
+            Course course = getCourse(title);
+            User user = getUser(username);
+            Statement statement = dbConnection.createStatement();
+            ResultSet rs = statement.executeQuery("DELETE FROM Comments WHERE userID = " + user.getId() + " AND courseID = " + course.getId());
+        }catch (SQLException e){
         }
     }
 
